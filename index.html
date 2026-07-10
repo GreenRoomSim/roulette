@@ -212,6 +212,58 @@
   }
   .btn-secondary:not(:disabled):hover{background:rgba(255,255,255,.12);}
 
+  /* ---------- Admin button ---------- */
+  .admin-btn{
+    position:fixed;
+    top:14px;right:14px;
+    background:rgba(255,255,255,.06);
+    color:var(--muted);
+    border:1px solid var(--line);
+    padding:8px 14px;
+    font-size:11px;
+    border-radius:8px;
+    z-index:40;
+  }
+  .admin-btn:hover{background:rgba(255,255,255,.12); color:var(--text);}
+  .admin-modal .admin-field{text-align:left;margin-bottom:12px;}
+  .admin-modal label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+  .admin-modal input{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.05);
+    color:var(--text);
+    font-family:'Rajdhani',sans-serif;
+    font-size:15px;
+  }
+  .admin-error{color:var(--pink);font-size:12px;min-height:16px;margin-bottom:6px;}
+
+  /* ---------- Bank / loan panel ---------- */
+  .bank-panel .bank-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .bank-panel .bank-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .bank-panel .bank-value{font-size:18px;font-weight:700;color:var(--cyan);}
+  .bank-panel .bank-value.debt{color:var(--pink);}
+  .bank-note{font-size:11.5px;color:var(--muted);margin:10px 0;line-height:1.4;}
+  .bank-controls{display:flex;gap:8px;margin-bottom:8px;}
+  .bank-input{
+    flex:1;min-width:0;
+    padding:9px 10px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.05);
+    color:var(--text);
+    font-family:'Rajdhani',sans-serif;
+    font-size:14px;
+  }
+  .btn-bank{padding:9px 16px;font-size:12px;white-space:nowrap;}
+  .bank-msg{font-size:12px;min-height:16px;margin-top:4px;}
+  .bank-msg.error{color:var(--pink);}
+  .bank-msg.success{color:var(--cyan);}
+
   /* ---------- Chip tray ---------- */
   .tray-label{
     text-align:center;
@@ -470,15 +522,18 @@
 </style>
 </head>
 <body>
+<button class="admin-btn" id="btn-admin-open">⚙ Admin</button>
 <div class="wrap">
 
   <header>
     <h1 class="logo">Vinewood Roulette</h1>
     <div class="tagline">Diamond Felt &middot; Single Zero &middot; Fictional Chips Only</div>
-    <div class="fictional-note">100% for funsies — no real money, no bank account, unlimited chips. Just spin and vibe.</div>
+    <div class="fictional-note">100% for funsies — no real money. Every session starts with 0 chips: ask the House Admin for a top-up, or visit the Banker below if you're running low.</div>
   </header>
 
   <div class="statbar">
+    <div class="stat"><div class="l">Chip Balance</div><div class="v" id="stat-balance">0</div></div>
+    <div class="stat"><div class="l">Debt Owed</div><div class="v" id="stat-debt">0</div></div>
     <div class="stat"><div class="l">Chips Wagered</div><div class="v" id="stat-wagered">0</div></div>
     <div class="stat"><div class="l">Spins Played</div><div class="v" id="stat-spins">0</div></div>
     <div class="stat"><div class="l">Session Net</div><div class="v" id="stat-session">0</div></div>
@@ -521,6 +576,27 @@
   </div>
 
   <div class="panels">
+    <div class="panel bank-panel">
+      <h3>The Banker — Loans &amp; Debt</h3>
+      <div class="bank-row">
+        <div class="bank-label">Chip Balance</div>
+        <div class="bank-value" id="bank-balance-display">0</div>
+      </div>
+      <div class="bank-row">
+        <div class="bank-label">Debt Owed</div>
+        <div class="bank-value debt" id="bank-debt-display">0</div>
+      </div>
+      <div class="bank-note">Broke? Borrow chips from the Banker. You must pay back <strong>double</strong> what you borrow, and you can never owe more than 100 chips at once.</div>
+      <div class="bank-controls">
+        <input type="number" id="borrow-amount" min="1" placeholder="Amount to borrow" class="bank-input">
+        <button class="btn-secondary btn-bank" id="btn-borrow">Borrow</button>
+      </div>
+      <div class="bank-controls">
+        <input type="number" id="repay-amount" min="1" placeholder="Amount to pay" class="bank-input">
+        <button class="btn-secondary btn-bank" id="btn-repay">Pay Debt</button>
+      </div>
+      <div class="bank-msg" id="bank-msg"></div>
+    </div>
     <div class="panel">
       <h3>Zero-Adjacent Bets</h3>
       <div class="zero-btns" id="zero-btns"></div>
@@ -551,6 +627,23 @@
     <div class="net" id="modal-net">+0</div>
     <div class="breakdown" id="modal-breakdown"></div>
     <button class="close-btn" id="modal-close">Collect &amp; Continue</button>
+  </div>
+</div>
+
+<div class="overlay" id="admin-overlay">
+  <div class="modal admin-modal">
+    <h2>House Admin</h2>
+    <div class="admin-field">
+      <label>Admin Password</label>
+      <input type="password" id="admin-password" placeholder="••••">
+    </div>
+    <div class="admin-field">
+      <label>Chips to Add</label>
+      <input type="number" id="admin-amount" min="1" placeholder="e.g. 100">
+    </div>
+    <div class="admin-error" id="admin-error"></div>
+    <button class="close-btn" id="admin-submit">Add Chips</button>
+    <button class="btn-secondary" id="admin-cancel" style="margin-top:10px;width:100%;">Cancel</button>
   </div>
 </div>
 
@@ -744,6 +837,116 @@
   let sessionNet = 0;
   let historyArr = [];
 
+  const ADMIN_PASSWORD = '888';
+  const MAX_DEBT = 100;
+  let chipBalance = 0;
+  let debt = 0;
+
+  function updateBalanceDisplay(){
+    document.getElementById('stat-balance').textContent = chipBalance.toLocaleString();
+    document.getElementById('bank-balance-display').textContent = chipBalance.toLocaleString();
+  }
+  function updateDebtDisplay(){
+    document.getElementById('stat-debt').textContent = debt.toLocaleString();
+    document.getElementById('bank-debt-display').textContent = debt.toLocaleString();
+    document.getElementById('stat-debt').classList.toggle('neg', debt > 0);
+  }
+  function flashInsufficientFunds(){
+    const el = document.getElementById('stat-balance');
+    el.classList.remove('neg'); void el.offsetWidth; el.classList.add('neg');
+    setTimeout(() => el.classList.remove('neg'), 650);
+  }
+
+  // ---------------------------------------------------------------
+  // Admin controls (password-gated chip top-ups)
+  // ---------------------------------------------------------------
+  const adminOverlay = document.getElementById('admin-overlay');
+  const adminPasswordInput = document.getElementById('admin-password');
+  const adminAmountInput = document.getElementById('admin-amount');
+  const adminError = document.getElementById('admin-error');
+
+  document.getElementById('btn-admin-open').addEventListener('click', () => {
+    adminPasswordInput.value = '';
+    adminAmountInput.value = '';
+    adminError.textContent = '';
+    adminOverlay.classList.add('show');
+    adminPasswordInput.focus();
+  });
+  document.getElementById('admin-cancel').addEventListener('click', () => {
+    adminOverlay.classList.remove('show');
+  });
+  adminOverlay.addEventListener('click', (e) => { if(e.target === adminOverlay) adminOverlay.classList.remove('show'); });
+
+  document.getElementById('admin-submit').addEventListener('click', () => {
+    const pw = adminPasswordInput.value;
+    const amt = parseInt(adminAmountInput.value, 10);
+    if(pw !== ADMIN_PASSWORD){
+      adminError.textContent = 'Incorrect password.';
+      return;
+    }
+    if(!Number.isFinite(amt) || amt <= 0){
+      adminError.textContent = 'Enter a valid chip amount.';
+      return;
+    }
+    chipBalance += amt;
+    updateBalanceDisplay();
+    adminError.textContent = '';
+    adminOverlay.classList.remove('show');
+  });
+
+  // ---------------------------------------------------------------
+  // Banker: borrow / repay
+  // ---------------------------------------------------------------
+  const bankMsg = document.getElementById('bank-msg');
+  function setBankMsg(text, kind){
+    bankMsg.textContent = text;
+    bankMsg.className = 'bank-msg' + (kind ? ' ' + kind : '');
+  }
+
+  document.getElementById('btn-borrow').addEventListener('click', () => {
+    const input = document.getElementById('borrow-amount');
+    const amt = parseInt(input.value, 10);
+    if(!Number.isFinite(amt) || amt <= 0){
+      setBankMsg('Enter a valid amount to borrow.', 'error');
+      return;
+    }
+    const newDebt = debt + amt * 2;
+    if(newDebt > MAX_DEBT){
+      setBankMsg(`That would put you at ${newDebt} chips owed — the Banker caps debt at ${MAX_DEBT}.`, 'error');
+      return;
+    }
+    chipBalance += amt;
+    debt = newDebt;
+    updateBalanceDisplay();
+    updateDebtDisplay();
+    setBankMsg(`Borrowed ${amt} chips. You now owe ${debt} chips.`, 'success');
+    input.value = '';
+  });
+
+  document.getElementById('btn-repay').addEventListener('click', () => {
+    const input = document.getElementById('repay-amount');
+    const amt = parseInt(input.value, 10);
+    if(!Number.isFinite(amt) || amt <= 0){
+      setBankMsg('Enter a valid amount to pay.', 'error');
+      return;
+    }
+    if(debt === 0){
+      setBankMsg('You have no debt to pay off.', 'error');
+      return;
+    }
+    if(amt > chipBalance){
+      setBankMsg("You don't have enough chips to pay that much.", 'error');
+      return;
+    }
+    const payment = Math.min(amt, debt);
+    chipBalance -= payment;
+    debt -= payment;
+    updateBalanceDisplay();
+    updateDebtDisplay();
+    setBankMsg(`Paid ${payment} chips off your debt. Remaining debt: ${debt}.`, 'success');
+    input.value = '';
+  });
+
   const chipTray = document.getElementById('chip-tray');
   chipTray.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -762,7 +965,14 @@
       el.classList.remove('maxed'); void el.offsetWidth; el.classList.add('maxed');
       return;
     }
+    if(selectedChip > chipBalance){
+      el.classList.remove('maxed'); void el.offsetWidth; el.classList.add('maxed');
+      flashInsufficientFunds();
+      return;
+    }
     bets[id] = current + selectedChip;
+    chipBalance -= selectedChip;
+    updateBalanceDisplay();
     updateBadge(id);
     updateTotals();
   }
@@ -788,10 +998,12 @@
 
   function clearBets(){
     if(spinning) return;
-    Object.keys(bets).forEach(id => updateBadge(id, 0));
+    const refund = Object.values(bets).reduce((a,b)=>a+b, 0);
+    chipBalance += refund;
     Object.keys(bets).forEach(id => { bets[id] = 0; updateBadge(id); });
     bets = {};
     updateTotals();
+    updateBalanceDisplay();
   }
   document.getElementById('btn-clear').addEventListener('click', clearBets);
 
@@ -881,6 +1093,9 @@
     historyArr.unshift(n);
     historyArr = historyArr.slice(0, 14);
 
+    chipBalance += totalReturn;
+    updateBalanceDisplay();
+
     renderSessionStats();
     renderHistory();
     showResultModal(n, totalWagered, totalReturn, net, winningBets);
@@ -940,6 +1155,8 @@
   updateTotals();
   renderSessionStats();
   renderHistory();
+  updateBalanceDisplay();
+  updateDebtDisplay();
 })();
 </script>
 </body>
