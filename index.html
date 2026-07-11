@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="Fictional single-zero roulette with a chip bank and banker loans. No real money.">
+<meta name="description" content="Fictional casino app with a shared chip bank, banker loans, and Roulette (more tables coming). No real money.">
 <meta name="theme-color" content="#170a26">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,9 +16,9 @@
 <script>
 (function(){
   var manifest = {
-    name: 'Vinewood Roulette',
+    name: 'Vinewood Casino',
     short_name: 'Vinewood',
-    description: 'Fictional single-zero roulette with a chip bank and banker loans.',
+    description: 'Fictional casino app with a shared chip bank, banker loans, and Roulette (more tables coming).',
     start_url: '.',
     display: 'standalone',
     background_color: '#0a0510',
@@ -34,7 +34,7 @@
   document.getElementById('manifest-link').setAttribute('href', URL.createObjectURL(blob));
 })();
 </script>
-<title>Vinewood Roulette</title>
+<title>Vinewood Casino</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -577,6 +577,117 @@
     letter-spacing:.5px;
   }
 
+  /* ---------- Screens / navigation ---------- */
+  .screen{display:none;}
+  .screen.active{display:block;animation:screenin .2s ease;}
+  @keyframes screenin{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .back-btn{
+    margin-bottom:18px;
+    padding:10px 18px;
+    font-size:12px;
+  }
+
+  .screen-title{
+    font-family:'Monoton', cursive;
+    font-size:clamp(22px,5.5vw,34px);
+    color:var(--pink);
+    text-shadow:0 0 6px var(--pink), 0 0 18px var(--pink), 0 0 3px #fff;
+    margin:0 0 4px;
+    letter-spacing:2px;
+  }
+  .screen-sub{
+    font-size:12px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:var(--cyan);
+    margin-bottom:20px;
+    text-shadow:0 0 10px rgba(38,232,214,.5);
+    font-weight:600;
+  }
+
+  /* ---------- Home: game grid ---------- */
+  .game-grid{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-top:12px;
+  }
+  .game-card{
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:30px 20px;
+    width:180px;
+    text-align:center;
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .game-card:hover{
+    transform:translateY(-4px);
+    border-color:var(--pink);
+    box-shadow:0 12px 30px rgba(255,46,166,.25);
+  }
+  .game-card .game-icon{font-size:42px;margin-bottom:12px;}
+  .game-card .game-title{
+    font-size:15px;font-weight:700;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--text);
+  }
+  .game-card .game-sub{font-size:11.5px;color:var(--muted);margin-top:5px;}
+  .game-card.locked{
+    opacity:.4;
+    cursor:default;
+    pointer-events:none;
+  }
+  .game-card.locked .game-icon{filter:grayscale(1);}
+
+  /* ---------- Roulette submenu list ---------- */
+  .menu-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:6px;
+    max-width:520px;
+  }
+  .menu-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .menu-item:hover{
+    background:rgba(255,255,255,.08);
+    border-color:var(--pink);
+    transform:translateX(2px);
+  }
+  .menu-item .menu-icon{font-size:26px;flex-shrink:0;}
+  .menu-item .menu-text{flex:1;min-width:0;}
+  .menu-item .menu-title{
+    font-size:14.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  }
+  .menu-item .menu-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .menu-item .menu-arrow{font-size:24px;color:var(--muted);flex-shrink:0;}
+
+  /* ---------- Local (non-sticky) stat bar for Wheel & Board ---------- */
+  .statbar-local{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin:18px 0;
+  }
+
+  .info-text{font-size:13px;color:var(--muted);line-height:1.6;margin:0;}
+  .info-text strong{color:var(--text);}
+
   @media (max-width:760px){
     .table-outer{padding:10px;}
     .swipe-hint{display:block;}
@@ -599,6 +710,9 @@
     .btn-bank{width:100%;}
     .panels{gap:12px;}
     .panel{flex:1 1 100%;max-width:none;padding:12px 14px;}
+    .game-card{width:100%;max-width:none;padding:22px 16px;}
+    .game-grid{gap:12px;}
+    .menu-item{padding:14px 16px;}
   }
 </style>
 </head>
@@ -607,59 +721,128 @@
 <div class="wrap">
 
   <header>
-    <h1 class="logo">Vinewood Roulette</h1>
-    <div class="tagline">Diamond Felt &middot; Single Zero &middot; Fictional Chips Only</div>
-    <div class="fictional-note">100% for funsies — no real money. Every session starts with 0 chips: ask the House Admin for a top-up, or visit the Banker below if you're running low.</div>
+    <h1 class="logo">Vinewood Casino</h1>
+    <div class="tagline">Fictional Chips Only &middot; Multiple Tables</div>
+    <div class="fictional-note">100% for funsies — no real money. Every session starts with 0 chips: ask the House Admin for a top-up, or visit the Banker if you're running low.</div>
   </header>
 
   <div class="statbar">
     <div class="stat"><div class="l">Chip Balance</div><div class="v" id="stat-balance">0</div></div>
     <div class="stat"><div class="l">Debt Owed</div><div class="v" id="stat-debt">0</div></div>
-    <div class="stat"><div class="l">Chips Wagered</div><div class="v" id="stat-wagered">0</div></div>
-    <div class="stat"><div class="l">Spins Played</div><div class="v" id="stat-spins">0</div></div>
-    <div class="stat"><div class="l">Session Net</div><div class="v" id="stat-session">0</div></div>
   </div>
 
-  <div class="history" id="history"></div>
-
-  <div class="wheel-zone">
-    <div class="wheel-holder">
-      <div class="pointer"></div>
-      <div class="wheel-rim">
-        <div class="wheel-inner">
-          <svg id="wheel-svg" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg"></svg>
-        </div>
+  <!-- ============ HOME ============ -->
+  <div class="screen active" id="screen-home">
+    <div class="game-grid">
+      <div class="game-card" id="card-roulette" data-target="screen-roulette-menu">
+        <div class="game-icon">🎡</div>
+        <div class="game-title">Roulette</div>
+        <div class="game-sub">European single-zero</div>
       </div>
-      <div class="hub"><span>DIAMOND<br>CASINO</span></div>
+      <div class="game-card locked">
+        <div class="game-icon">🎲</div>
+        <div class="game-title">Coming Soon</div>
+        <div class="game-sub">New table on the way</div>
+      </div>
     </div>
   </div>
 
-  <div class="controls-row">
-    <button class="btn-spin" id="btn-spin">Spin the Wheel</button>
-    <button class="btn-secondary" id="btn-clear">Clear Bets</button>
-    <button class="btn-secondary" id="btn-reset-session">Reset Session Stats</button>
-  </div>
-
-  <div class="tray-label">Select a chip, then click a spot on the table to bet</div>
-  <div class="chip-tray" id="chip-tray">
-    <div class="chip" data-v="1">1</div>
-    <div class="chip" data-v="5">5</div>
-    <div class="chip" data-v="25">25</div>
-    <div class="chip" data-v="100">100</div>
-    <div class="chip" data-v="500">500</div>
-    <div class="chip" data-v="1000">1K</div>
-  </div>
-
-  <div class="table-scroll">
-    <div class="swipe-hint">&larr; swipe to see the full table &rarr;</div>
-    <div class="table-outer">
-      <div class="table-surface" id="table-surface"></div>
+  <!-- ============ ROULETTE MENU ============ -->
+  <div class="screen" id="screen-roulette-menu">
+    <button class="btn-secondary back-btn" data-target="screen-home">&larr; Back to Home</button>
+    <div class="screen-title">Roulette</div>
+    <div class="screen-sub">Diamond Felt &middot; Single Zero</div>
+    <div class="menu-list">
+      <div class="menu-item" data-target="screen-wheel-board">
+        <div class="menu-icon">🎡</div>
+        <div class="menu-text">
+          <div class="menu-title">View Wheel &amp; Board</div>
+          <div class="menu-sub">Place bets and spin the wheel</div>
+        </div>
+        <div class="menu-arrow">&rsaquo;</div>
+      </div>
+      <div class="menu-item" data-target="screen-bank">
+        <div class="menu-icon">🏦</div>
+        <div class="menu-text">
+          <div class="menu-title">View Bank</div>
+          <div class="menu-sub">Check your balance, borrow or repay</div>
+        </div>
+        <div class="menu-arrow">&rsaquo;</div>
+      </div>
+      <div class="menu-item" data-target="screen-bets">
+        <div class="menu-icon">📋</div>
+        <div class="menu-text">
+          <div class="menu-title">View Bets</div>
+          <div class="menu-sub">Payouts, table limits &amp; rules</div>
+        </div>
+        <div class="menu-arrow">&rsaquo;</div>
+      </div>
     </div>
   </div>
 
-  <div class="panels">
-    <div class="panel bank-panel">
-      <h3>The Banker — Loans &amp; Debt</h3>
+  <!-- ============ WHEEL & BOARD ============ -->
+  <div class="screen" id="screen-wheel-board">
+    <button class="btn-secondary back-btn" data-target="screen-roulette-menu">&larr; Back to Roulette</button>
+
+    <div class="history" id="history"></div>
+
+    <div class="wheel-zone">
+      <div class="wheel-holder">
+        <div class="pointer"></div>
+        <div class="wheel-rim">
+          <div class="wheel-inner">
+            <svg id="wheel-svg" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+        </div>
+        <div class="hub"><span>DIAMOND<br>CASINO</span></div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <button class="btn-spin" id="btn-spin">Spin the Wheel</button>
+      <button class="btn-secondary" id="btn-clear">Clear Bets</button>
+      <button class="btn-secondary" id="btn-reset-session">Reset Session Stats</button>
+    </div>
+
+    <div class="tray-label">Select a chip, then click a spot on the table to bet</div>
+    <div class="chip-tray" id="chip-tray">
+      <div class="chip" data-v="1">1</div>
+      <div class="chip" data-v="5">5</div>
+      <div class="chip" data-v="25">25</div>
+      <div class="chip" data-v="100">100</div>
+      <div class="chip" data-v="500">500</div>
+      <div class="chip" data-v="1000">1K</div>
+    </div>
+
+    <div class="table-scroll">
+      <div class="swipe-hint">&larr; swipe to see the full table &rarr;</div>
+      <div class="table-outer">
+        <div class="table-surface" id="table-surface"></div>
+      </div>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <h3>Zero-Adjacent Bets</h3>
+        <div class="zero-btns" id="zero-btns"></div>
+      </div>
+    </div>
+
+    <div class="statbar-local">
+      <div class="stat"><div class="l">Chips Wagered</div><div class="v" id="stat-wagered">0</div></div>
+      <div class="stat"><div class="l">Spins Played</div><div class="v" id="stat-spins">0</div></div>
+      <div class="stat"><div class="l">Session Net</div><div class="v" id="stat-session">0</div></div>
+    </div>
+
+    <footer>European-style single-zero wheel (37 pockets) &mdash; same layout used by the Diamond Casino table. All chips are fictional and reset every round.</footer>
+  </div>
+
+  <!-- ============ BANK ============ -->
+  <div class="screen" id="screen-bank">
+    <button class="btn-secondary back-btn" data-target="screen-roulette-menu">&larr; Back to Roulette</button>
+    <div class="screen-title">The Banker</div>
+    <div class="screen-sub">Loans &amp; Debt</div>
+    <div class="panel bank-panel" style="max-width:480px;margin:0 auto;">
       <div class="bank-row">
         <div class="bank-label">Chip Balance</div>
         <div class="bank-value" id="bank-balance-display">0</div>
@@ -679,27 +862,42 @@
       </div>
       <div class="bank-msg" id="bank-msg"></div>
     </div>
-    <div class="panel">
-      <h3>Zero-Adjacent Bets</h3>
-      <div class="zero-btns" id="zero-btns"></div>
-    </div>
-    <div class="panel">
-      <h3>Table Limits (per spot)</h3>
-      <table class="limits">
-        <tr><th>Bet type</th><th>Pays</th><th>Max</th></tr>
-        <tr><td>Straight (1 number)</td><td>35:1</td><td class="num">500</td></tr>
-        <tr><td>Split (2 numbers)</td><td>17:1</td><td class="num">1,000</td></tr>
-        <tr><td>Street (3 in a row)</td><td>11:1</td><td class="num">1,500</td></tr>
-        <tr><td>Corner (4 numbers)</td><td>8:1</td><td class="num">2,000</td></tr>
-        <tr><td>Basket / Trio (0-line)</td><td>8-11:1</td><td class="num">1,500-2,000</td></tr>
-        <tr><td>Six Line (6 numbers)</td><td>5:1</td><td class="num">3,000</td></tr>
-        <tr><td>Column / Dozen</td><td>2:1</td><td class="num">5,000</td></tr>
-        <tr><td>Red/Black/Odd/Even/Hi-Lo</td><td>1:1</td><td class="num">10,000</td></tr>
-      </table>
-    </div>
   </div>
 
-  <footer>European-style single-zero wheel (37 pockets) &mdash; same layout used by the Diamond Casino table. All chips are fictional and reset every round.</footer>
+  <!-- ============ BETS INFO ============ -->
+  <div class="screen" id="screen-bets">
+    <button class="btn-secondary back-btn" data-target="screen-roulette-menu">&larr; Back to Roulette</button>
+    <div class="screen-title">Bets &amp; Payouts</div>
+    <div class="screen-sub">Everything you need to know at the table</div>
+    <div class="panels">
+      <div class="panel">
+        <h3>Table Limits (per spot)</h3>
+        <table class="limits">
+          <tr><th>Bet type</th><th>Pays</th><th>Max</th></tr>
+          <tr><td>Straight (1 number)</td><td>35:1</td><td class="num">500</td></tr>
+          <tr><td>Split (2 numbers)</td><td>17:1</td><td class="num">1,000</td></tr>
+          <tr><td>Street (3 in a row)</td><td>11:1</td><td class="num">1,500</td></tr>
+          <tr><td>Corner (4 numbers)</td><td>8:1</td><td class="num">2,000</td></tr>
+          <tr><td>Basket / Trio (0-line)</td><td>8-11:1</td><td class="num">1,500-2,000</td></tr>
+          <tr><td>Six Line (6 numbers)</td><td>5:1</td><td class="num">3,000</td></tr>
+          <tr><td>Column / Dozen</td><td>2:1</td><td class="num">5,000</td></tr>
+          <tr><td>Red/Black/Odd/Even/Hi-Lo</td><td>1:1</td><td class="num">10,000</td></tr>
+        </table>
+      </div>
+      <div class="panel">
+        <h3>The Wheel</h3>
+        <p class="info-text">European-style <strong>single-zero</strong> wheel &mdash; 37 pockets (0&ndash;36). A single zero means a lower house edge than American double-zero wheels. Straight-up bets pay 35:1, and payouts scale down as you cover more numbers per bet.</p>
+      </div>
+      <div class="panel">
+        <h3>How Borrowing Works</h3>
+        <p class="info-text">Broke? Visit the Banker to borrow chips. Whatever you borrow, you owe <strong>double</strong> back &mdash; borrow 2, owe 4; borrow 6, owe 12. You can never carry more than <strong>100 chips</strong> of debt at once. Pay it down any time straight from your chip balance on the Bank screen.</p>
+      </div>
+      <div class="panel">
+        <h3>Getting Chips</h3>
+        <p class="info-text">Every session starts at <strong>0 chips</strong>. Top-ups come from the House Admin (password-protected) or by borrowing from the Banker. All chips are 100% fictional &mdash; no real money is ever involved.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="overlay" id="overlay">
@@ -732,6 +930,19 @@
 <script>
 (function(){
   "use strict";
+
+  // ---------------------------------------------------------------
+  // Screen navigation
+  // ---------------------------------------------------------------
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    if(target) target.classList.add('active');
+    window.scrollTo({top: 0, behavior: 'auto'});
+  }
+  document.querySelectorAll('[data-target]').forEach(el => {
+    el.addEventListener('click', () => showScreen(el.dataset.target));
+  });
 
   // ---------------------------------------------------------------
   // Roulette constants (verified against real single-zero roulette)
