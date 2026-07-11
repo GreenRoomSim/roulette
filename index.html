@@ -258,6 +258,12 @@
     font-size:14px;
   }
   .btn-secondary:not(:disabled):hover{background:rgba(255,255,255,.12);}
+  .btn-banker-link{
+    background:rgba(244,198,90,.12);
+    border:1px solid rgba(244,198,90,.5);
+    color:var(--gold);
+  }
+  .btn-banker-link:hover{background:rgba(244,198,90,.22);}
 
   /* ---------- Admin button ---------- */
   .admin-btn{
@@ -287,15 +293,107 @@
   }
   .admin-error{color:var(--pink);font-size:12px;min-height:16px;margin-bottom:6px;}
 
-  /* ---------- Bank / loan panel ---------- */
-  .bank-panel .bank-row{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);
+  /* ---------- Bank / vault ---------- */
+  .vault-card{
+    max-width:480px;
+    margin:0 auto;
+    background:linear-gradient(160deg, #241238, #150a26);
+    border:2px solid var(--gold-2);
+    border-radius:20px;
+    padding:22px 20px 26px;
+    box-shadow:0 20px 50px rgba(0,0,0,.5), inset 0 0 40px rgba(0,0,0,.3);
+    position:relative;
+    overflow:hidden;
   }
-  .bank-panel .bank-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-  .bank-panel .bank-value{font-size:18px;font-weight:700;color:var(--cyan);}
-  .bank-panel .bank-value.debt{color:var(--pink);}
-  .bank-note{font-size:11.5px;color:var(--muted);margin:10px 0;line-height:1.4;}
+  .vault-card::before{
+    content:'';
+    position:absolute;
+    top:-60px;right:-60px;
+    width:180px;height:180px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(244,198,90,.15), transparent 70%);
+    pointer-events:none;
+  }
+  .vault-top{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    margin-bottom:18px;
+  }
+  .vault-emoji{font-size:32px;filter:drop-shadow(0 0 10px rgba(244,198,90,.6));}
+  .vault-heading{
+    font-family:'Monoton', cursive;
+    font-size:19px;
+    color:var(--gold);
+    text-shadow:0 0 10px rgba(244,198,90,.6);
+    letter-spacing:1.5px;
+  }
+  .vault-tiles{display:flex;gap:12px;margin-bottom:16px;position:relative;}
+  .vault-tile{
+    flex:1;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 10px;
+    text-align:center;
+  }
+  .vault-tile.owe{border-color:rgba(255,46,166,.4);}
+  .vault-tile-icon{font-size:22px;margin-bottom:6px;}
+  .vault-tile-label{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+  .vault-tile-value{font-size:24px;font-weight:800;color:var(--cyan);margin-top:2px;}
+  .vault-tile.owe .vault-tile-value{color:var(--pink);}
+
+  .debt-meter-wrap{margin-bottom:16px;position:relative;}
+  .debt-meter{
+    height:10px;
+    border-radius:6px;
+    background:rgba(255,255,255,.08);
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .debt-meter-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--gold), var(--pink));
+    border-radius:6px;
+    transition:width .3s ease;
+  }
+  .debt-meter-label{
+    text-align:center;
+    font-size:10.5px;
+    color:var(--muted);
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-top:6px;
+  }
+
+  .vault-note{
+    font-size:12px;color:var(--muted);line-height:1.5;
+    text-align:center;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .vault-note strong{color:var(--text);}
+
+  .vault-section{margin-bottom:16px;position:relative;}
+  .vault-section-title{
+    font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--cyan);margin-bottom:8px;
+  }
+  .quick-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+  .quick-chip{
+    flex:1;min-width:56px;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:10px 6px;
+    border-radius:10px;
+    font-size:13px;font-weight:700;
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:background .12s ease, transform .12s ease;
+  }
+  .quick-chip:hover{background:rgba(255,255,255,.14); transform:translateY(-2px);}
+  .quick-chip:active{transform:translateY(0);}
+
   .bank-controls{display:flex;gap:8px;margin-bottom:8px;}
   .bank-input{
     flex:1;min-width:0;
@@ -308,7 +406,7 @@
     font-size:16px;
   }
   .btn-bank{padding:9px 16px;font-size:12px;white-space:nowrap;}
-  .bank-msg{font-size:12px;min-height:16px;margin-top:4px;}
+  .bank-msg{font-size:12px;min-height:16px;margin-top:4px;text-align:center;position:relative;}
   .bank-msg.error{color:var(--pink);}
   .bank-msg.success{color:var(--cyan);}
 
@@ -480,28 +578,6 @@
     letter-spacing:2px;
     text-transform:uppercase;
     color:var(--cyan);
-  }
-  .zero-btns{display:flex;flex-wrap:wrap;gap:8px;}
-  .zbtn{
-    position:relative;
-    background:rgba(14,138,82,.25);
-    border:1px solid rgba(14,138,82,.6);
-    color:#fff;
-    font-weight:600;
-    font-size:12px;
-    padding:8px 10px;
-    border-radius:8px;
-    cursor:pointer;
-  }
-  .zbtn:hover{background:rgba(14,138,82,.45);}
-  .zbtn .zbadge{
-    position:absolute;top:-8px;right:-8px;
-    background:var(--gold);color:#3a2500;
-    border-radius:50%;
-    width:20px;height:20px;
-    font-size:10px;font-weight:800;
-    display:none;align-items:center;justify-content:center;
-    border:1px solid #fff;
   }
   table.limits{width:100%;border-collapse:collapse;font-size:12.5px;}
   table.limits th, table.limits td{text-align:left;padding:4px 6px;border-bottom:1px solid rgba(255,255,255,.08);}
@@ -784,6 +860,12 @@
   <div class="screen" id="screen-wheel-board">
     <button class="btn-secondary back-btn" data-target="screen-roulette-menu">&larr; Back to Roulette</button>
 
+    <div class="statbar-local">
+      <div class="stat"><div class="l">Chips Wagered</div><div class="v" id="stat-wagered">0</div></div>
+      <div class="stat"><div class="l">Spins Played</div><div class="v" id="stat-spins">0</div></div>
+      <div class="stat"><div class="l">Session Net</div><div class="v" id="stat-session">0</div></div>
+    </div>
+
     <div class="history" id="history"></div>
 
     <div class="wheel-zone">
@@ -802,6 +884,7 @@
       <button class="btn-spin" id="btn-spin">Spin the Wheel</button>
       <button class="btn-secondary" id="btn-clear">Clear Bets</button>
       <button class="btn-secondary" id="btn-reset-session">Reset Session Stats</button>
+      <button class="btn-secondary btn-banker-link" data-target="screen-bank">🏦 Go To Banker</button>
     </div>
 
     <div class="tray-label">Select a chip, then click a spot on the table to bet</div>
@@ -821,19 +904,6 @@
       </div>
     </div>
 
-    <div class="panels">
-      <div class="panel">
-        <h3>Zero-Adjacent Bets</h3>
-        <div class="zero-btns" id="zero-btns"></div>
-      </div>
-    </div>
-
-    <div class="statbar-local">
-      <div class="stat"><div class="l">Chips Wagered</div><div class="v" id="stat-wagered">0</div></div>
-      <div class="stat"><div class="l">Spins Played</div><div class="v" id="stat-spins">0</div></div>
-      <div class="stat"><div class="l">Session Net</div><div class="v" id="stat-session">0</div></div>
-    </div>
-
     <footer>European-style single-zero wheel (37 pockets) &mdash; same layout used by the Diamond Casino table. All chips are fictional and reset every round.</footer>
   </div>
 
@@ -842,24 +912,60 @@
     <button class="btn-secondary back-btn" data-target="screen-roulette-menu">&larr; Back to Roulette</button>
     <div class="screen-title">The Banker</div>
     <div class="screen-sub">Loans &amp; Debt</div>
-    <div class="panel bank-panel" style="max-width:480px;margin:0 auto;">
-      <div class="bank-row">
-        <div class="bank-label">Chip Balance</div>
-        <div class="bank-value" id="bank-balance-display">0</div>
+
+    <div class="vault-card">
+      <div class="vault-top">
+        <div class="vault-emoji">🏦</div>
+        <div class="vault-heading">Vinewood Vault</div>
       </div>
-      <div class="bank-row">
-        <div class="bank-label">Debt Owed</div>
-        <div class="bank-value debt" id="bank-debt-display">0</div>
+
+      <div class="vault-tiles">
+        <div class="vault-tile">
+          <div class="vault-tile-icon">💰</div>
+          <div class="vault-tile-label">Balance</div>
+          <div class="vault-tile-value" id="bank-balance-display">0</div>
+        </div>
+        <div class="vault-tile owe">
+          <div class="vault-tile-icon">🧾</div>
+          <div class="vault-tile-label">You Owe</div>
+          <div class="vault-tile-value" id="bank-debt-display">0</div>
+        </div>
       </div>
-      <div class="bank-note">Broke? Borrow chips from the Banker. You must pay back <strong>double</strong> what you borrow, and you can never owe more than 100 chips at once.</div>
-      <div class="bank-controls">
-        <input type="number" id="borrow-amount" min="1" placeholder="Amount to borrow" class="bank-input">
-        <button class="btn-secondary btn-bank" id="btn-borrow">Borrow</button>
+
+      <div class="debt-meter-wrap">
+        <div class="debt-meter"><div class="debt-meter-fill" id="debt-meter-fill"></div></div>
+        <div class="debt-meter-label" id="debt-meter-label">0 / 100 debt cap</div>
       </div>
-      <div class="bank-controls">
-        <input type="number" id="repay-amount" min="1" placeholder="Amount to pay" class="bank-input">
-        <button class="btn-secondary btn-bank" id="btn-repay">Pay Debt</button>
+
+      <div class="vault-note">Short on chips? Borrow from the vault. You'll owe <strong>150%</strong> back, rounded up &mdash; capped at <strong>100 chips</strong> of debt.</div>
+
+      <div class="vault-section">
+        <div class="vault-section-title">💸 Borrow</div>
+        <div class="quick-row">
+          <button class="quick-chip" data-borrow="5">5</button>
+          <button class="quick-chip" data-borrow="10">10</button>
+          <button class="quick-chip" data-borrow="25">25</button>
+          <button class="quick-chip" data-borrow="50">50</button>
+        </div>
+        <div class="bank-controls">
+          <input type="number" id="borrow-amount" min="1" placeholder="Custom amount" class="bank-input">
+          <button class="btn-secondary btn-bank" id="btn-borrow">Borrow</button>
+        </div>
       </div>
+
+      <div class="vault-section">
+        <div class="vault-section-title">✅ Repay</div>
+        <div class="quick-row">
+          <button class="quick-chip" data-repay-pct="25">25%</button>
+          <button class="quick-chip" data-repay-pct="50">Half</button>
+          <button class="quick-chip" data-repay-pct="100">All</button>
+        </div>
+        <div class="bank-controls">
+          <input type="number" id="repay-amount" min="1" placeholder="Custom amount" class="bank-input">
+          <button class="btn-secondary btn-bank" id="btn-repay">Pay</button>
+        </div>
+      </div>
+
       <div class="bank-msg" id="bank-msg"></div>
     </div>
   </div>
@@ -878,7 +984,6 @@
           <tr><td>Split (2 numbers)</td><td>17:1</td><td class="num">1,000</td></tr>
           <tr><td>Street (3 in a row)</td><td>11:1</td><td class="num">1,500</td></tr>
           <tr><td>Corner (4 numbers)</td><td>8:1</td><td class="num">2,000</td></tr>
-          <tr><td>Basket / Trio (0-line)</td><td>8-11:1</td><td class="num">1,500-2,000</td></tr>
           <tr><td>Six Line (6 numbers)</td><td>5:1</td><td class="num">3,000</td></tr>
           <tr><td>Column / Dozen</td><td>2:1</td><td class="num">5,000</td></tr>
           <tr><td>Red/Black/Odd/Even/Hi-Lo</td><td>1:1</td><td class="num">10,000</td></tr>
@@ -890,7 +995,7 @@
       </div>
       <div class="panel">
         <h3>How Borrowing Works</h3>
-        <p class="info-text">Broke? Visit the Banker to borrow chips. Whatever you borrow, you owe <strong>double</strong> back &mdash; borrow 2, owe 4; borrow 6, owe 12. You can never carry more than <strong>100 chips</strong> of debt at once. Pay it down any time straight from your chip balance on the Bank screen.</p>
+        <p class="info-text">Broke? Visit the Banker to borrow chips. Whatever you borrow, you owe <strong>150% back, rounded up</strong> &mdash; borrow 2, owe 3; borrow 10, owe 15. You can never carry more than <strong>100 chips</strong> of debt at once. Pay it down any time straight from your chip balance on the Bank screen.</p>
       </div>
       <div class="panel">
         <h3>Getting Chips</h3>
@@ -1036,23 +1141,11 @@
     addSpot({id:'even'+idx, numbers:d.nums, mult:1, max:10000, kind:'box', extraCls:d.cls, x:ZEROW+idx*2*CELL, y:3*CELL+36+44, w:2*CELL, h:44, label:d.label, name:d.label});
   });
 
-  // Zero-adjacent specials (rendered separately, no table coordinates)
-  const zeroSpecials = [
-    {id:'zs03', numbers:[0,3], mult:17, max:1000, name:'Split 0-3', label:'0-3 Split'},
-    {id:'zs02', numbers:[0,2], mult:17, max:1000, name:'Split 0-2', label:'0-2 Split'},
-    {id:'zs01', numbers:[0,1], mult:17, max:1000, name:'Split 0-1', label:'0-1 Split'},
-    {id:'zs023', numbers:[0,2,3], mult:11, max:1500, name:'Trio 0-2-3', label:'0-2-3 Trio'},
-    {id:'zs012', numbers:[0,1,2], mult:11, max:1500, name:'Trio 0-1-2', label:'0-1-2 Trio'},
-    {id:'zs0123', numbers:[0,1,2,3], mult:8, max:2000, name:'Basket 0-1-2-3', label:'0-1-2-3 Basket'},
-  ];
-  zeroSpecials.forEach(z => addSpot({...z, kind:'zero'}));
-
   // ---------------------------------------------------------------
   // Render table
   // ---------------------------------------------------------------
   const surface = document.getElementById('table-surface');
   spots.forEach(spot => {
-    if(spot.kind === 'zero') return; // rendered in side panel
     const el = document.createElement('div');
     el.className = 'spot';
     el.style.left = spot.x + 'px';
@@ -1079,16 +1172,6 @@
 
     el.addEventListener('click', () => placeBet(spot.id, el));
     surface.appendChild(el);
-  });
-
-  const zeroBtnsWrap = document.getElementById('zero-btns');
-  zeroSpecials.forEach(z => {
-    const btn = document.createElement('div');
-    btn.className = 'zbtn';
-    btn.dataset.id = z.id;
-    btn.innerHTML = `${z.label} <span class="tiny">(${z.mult}:1)</span><span class="zbadge" id="zbadge-${z.id}"></span>`;
-    btn.addEventListener('click', () => placeBet(z.id, btn));
-    zeroBtnsWrap.appendChild(btn);
   });
 
   // ---------------------------------------------------------------
@@ -1135,6 +1218,8 @@
   let chipBalance = 0;
   let debt = 0;
 
+  const BORROW_INTEREST = 1.5; // pay back 150% of what you borrow, rounded up
+
   function updateBalanceDisplay(){
     document.getElementById('stat-balance').textContent = chipBalance.toLocaleString();
     document.getElementById('bank-balance-display').textContent = chipBalance.toLocaleString();
@@ -1143,6 +1228,10 @@
     document.getElementById('stat-debt').textContent = debt.toLocaleString();
     document.getElementById('bank-debt-display').textContent = debt.toLocaleString();
     document.getElementById('stat-debt').classList.toggle('neg', debt > 0);
+    const fill = document.getElementById('debt-meter-fill');
+    const label = document.getElementById('debt-meter-label');
+    if(fill){ fill.style.width = Math.min(100, (debt / MAX_DEBT) * 100) + '%'; }
+    if(label){ label.textContent = `${debt} / ${MAX_DEBT} debt cap`; }
   }
   function flashInsufficientFunds(){
     const el = document.getElementById('stat-balance');
@@ -1196,14 +1285,13 @@
     bankMsg.className = 'bank-msg' + (kind ? ' ' + kind : '');
   }
 
-  document.getElementById('btn-borrow').addEventListener('click', () => {
-    const input = document.getElementById('borrow-amount');
-    const amt = parseInt(input.value, 10);
+  function doBorrow(amt){
     if(!Number.isFinite(amt) || amt <= 0){
       setBankMsg('Enter a valid amount to borrow.', 'error');
       return;
     }
-    const newDebt = debt + amt * 2;
+    const owed = Math.ceil(amt * BORROW_INTEREST);
+    const newDebt = debt + owed;
     if(newDebt > MAX_DEBT){
       setBankMsg(`That would put you at ${newDebt} chips owed — the Banker caps debt at ${MAX_DEBT}.`, 'error');
       return;
@@ -1212,13 +1300,10 @@
     debt = newDebt;
     updateBalanceDisplay();
     updateDebtDisplay();
-    setBankMsg(`Borrowed ${amt} chips. You now owe ${debt} chips.`, 'success');
-    input.value = '';
-  });
+    setBankMsg(`Borrowed ${amt} chips (owe ${owed} back). You now owe ${debt} chips.`, 'success');
+  }
 
-  document.getElementById('btn-repay').addEventListener('click', () => {
-    const input = document.getElementById('repay-amount');
-    const amt = parseInt(input.value, 10);
+  function doRepay(amt){
     if(!Number.isFinite(amt) || amt <= 0){
       setBankMsg('Enter a valid amount to pay.', 'error');
       return;
@@ -1237,7 +1322,30 @@
     updateBalanceDisplay();
     updateDebtDisplay();
     setBankMsg(`Paid ${payment} chips off your debt. Remaining debt: ${debt}.`, 'success');
+  }
+
+  document.getElementById('btn-borrow').addEventListener('click', () => {
+    const input = document.getElementById('borrow-amount');
+    doBorrow(parseInt(input.value, 10));
     input.value = '';
+  });
+
+  document.getElementById('btn-repay').addEventListener('click', () => {
+    const input = document.getElementById('repay-amount');
+    doRepay(parseInt(input.value, 10));
+    input.value = '';
+  });
+
+  document.querySelectorAll('[data-borrow]').forEach(btn => {
+    btn.addEventListener('click', () => doBorrow(parseInt(btn.dataset.borrow, 10)));
+  });
+  document.querySelectorAll('[data-repay-pct]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pct = parseInt(btn.dataset.repayPct, 10);
+      if(debt === 0){ setBankMsg('You have no debt to pay off.', 'error'); return; }
+      const raw = pct === 100 ? debt : Math.ceil(debt * (pct / 100));
+      doRepay(Math.min(raw, chipBalance));
+    });
   });
 
   const chipTray = document.getElementById('chip-tray');
@@ -1276,11 +1384,6 @@
     if(b1){
       if(amt > 0){ b1.style.display = 'flex'; b1.textContent = amt; }
       else { b1.style.display = 'none'; b1.textContent = ''; }
-    }
-    const b2 = document.getElementById('zbadge-' + id);
-    if(b2){
-      if(amt > 0){ b2.style.display = 'flex'; b2.textContent = amt; }
-      else { b2.style.display = 'none'; b2.textContent = ''; }
     }
   }
 
